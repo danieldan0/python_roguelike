@@ -18,8 +18,8 @@ def main():
             if event.type == 'KEYDOWN':
                 user_input = event
                 break
-            else:
-                user_input = None
+        else:
+            user_input = None
 
         if not user_input:
             continue
