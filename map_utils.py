@@ -90,6 +90,9 @@ def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_h
                 # center coordinates of new room, will be useful later
                 (new_x, new_y) = new_room.center()
 
+                # place monsters
+                place_entities(new_room, entities, max_monsters_per_room, colors)
+
                 if num_rooms == 0:
                     # this is the first room, where the player starts at
                     player.x = new_x
