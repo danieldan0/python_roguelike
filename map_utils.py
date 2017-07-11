@@ -2,6 +2,8 @@ from tdl.map import Map
 
 from random import randint
 
+from entity import Entity
+
 class GameMap(Map):
     def __init__(self, width, height):
         super().__init__(width, height)
@@ -24,6 +26,23 @@ class Rect:
         return (self.x1 <= other.x2 and self.x2 >= other.x1 and
                 self.y1 <= other.y2 and self.y2 >= other.y1)
 
+def place_entities(room, entities, max_monsters_per_room, colors):
+    # Get a random number of monsters
+    number_of_monsters = randint(0, max_monsters_per_room)
+
+    for i in range(number_of_monsters):
+        # Choose a random location in the room
+        x = randint(room.x1 + 1, room.x2 - 1)
+        y = randint(room.y1 + 1, room.y2 - 1)
+
+        if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+            if randint(0, 100) < 80:
+                monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True)
+            else:
+                monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True)
+
+            entities.append(monster)
+
 def create_room(game_map, room):
     # go through the tiles in the rectangle and make them passable
     for x in range(room.x1 + 1, room.x2):
@@ -42,7 +61,8 @@ def create_v_tunnel(game_map, y1, y2, x):
         game_map.walkable[x, y] = True
         game_map.transparent[x, y] = True
 
-def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player):
+def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
+             max_monsters_per_room, colors):
     rooms = []
     num_rooms = 0
 
