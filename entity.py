@@ -18,7 +18,7 @@ class Entity:
             self[component.name] = component
             self[component.name].__init__(properties)
             if self[component.name]:  #let the component know who owns it
-                self.[component.name].owner = self
+                self[component.name].owner = self
             self.components.append(component.name)
 
     def has_component(component):
