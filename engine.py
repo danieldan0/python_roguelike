@@ -31,7 +31,7 @@ def main():
         'darker_green': (0, 127, 0)
     }
 
-    player = Entity(0, 0, '@', (255, 255, 255), 'Player', blocks=True)
+    player = Entity(0, 0, '@', 'Player', (255, 255, 255), blocks=True)
     entities = [player]
 
     tdl.set_font('arial10x10.png', greyscale = True, altLayout = True)

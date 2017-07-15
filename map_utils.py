@@ -37,9 +37,9 @@ def place_entities(room, entities, max_monsters_per_room, colors):
 
         if not any([entity for entity in entities if entity.x == x and entity.y == y]):
             if randint(0, 100) < 80:
-                monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True)
+                monster = Entity(x, y, 'o', 'Orc', colors.get('desaturated_green'), blocks=True)
             else:
-                monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True)
+                monster = Entity(x, y, 'T', 'Troll', colors.get('darker_green'), blocks=True)
 
             entities.append(monster)
 
