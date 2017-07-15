@@ -4,7 +4,7 @@ class Entity:
     """
     A generic object to represent players, enemies, items, etc.
     """
-    def __init__(self, x, y, char, name, color, blocks = False, components, properties):
+    def __init__(self, x, y, char, name, color, blocks = False, components = [], properties = {}):
         self.x = x
         self.y = y
         self.char = char
