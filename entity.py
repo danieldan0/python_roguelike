@@ -1,25 +1,24 @@
 import math
 
+from render_functions import RenderOrder
+
 class Entity:
-    """
-    A generic object to represent players, enemies, items, etc.
-    """
-    def __init__(self, x, y, char, name, color, blocks = False, components = [], properties = {}):
+    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None):
         self.x = x
         self.y = y
         self.char = char
         self.color = color
         self.name = name
         self.blocks = blocks
+        self.render_order = render_order
+        self.fighter = fighter
+        self.ai = ai
 
-        #ECS stuff
-        self.components = []
-        for component in components:
-            self[component.name] = component
-            self[component.name].__init__(properties)
-            if self[component.name]:  #let the component know who owns it
-                self[component.name].owner = self
-            self.components.append(component.name)
+        if self.fighter:
+            self.fighter.owner = self
+
+        if self.ai:
+            self.ai.owner = self
 
     def has_component(component):
         return (component.name in self.components)
@@ -29,17 +28,14 @@ class Entity:
         self.x += dx
         self.y += dy
 
-    def move_towards(self, target_x, target_y):
-        #vector from this object to the target, and distance
-        dx = target_x - self.x
-        dy = target_y - self.y
-        distance = math.sqrt(dx ** 2 + dy ** 2)
+    def move_towards(self, target_x, target_y, game_map, entities):
+        path = game_map.compute_path(self.x, self.y, target_x, target_y)
 
-        #normalize it to length 1 (preserving direction), then round it and
-        #convert to integer so the movement is restricted to the map grid
-        dx = int(round(dx / distance))
-        dy = int(round(dy / distance))
-        self.move(dx, dy)
+        dx = path[0][0] - self.x
+        dy = path[0][1] - self.y
+
+        if game_map.walkable[path[1][0], path[1][1]] and not get_blocking_entities_at_location(entities, self.x + dx, self.y + dy):
+            self.move(dx, dy)
 
     def distance_to(self, other):
         #return the distance to another object

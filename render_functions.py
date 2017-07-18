@@ -1,4 +1,11 @@
-def render_all(con, entities, game_map, fov_recompute, root_console, screen_width, screen_height, colors):
+from enum import Enum
+
+class RenderOrder(Enum):
+    CORPSE = 1
+    ITEM = 2
+    ACTOR = 3
+
+def render_all(con, entities, player, game_map, fov_recompute, root_console, screen_width, screen_height, colors):
     if fov_recompute:
         for x, y in game_map:
             wall = not game_map.transparent[x, y]
@@ -15,9 +22,13 @@ def render_all(con, entities, game_map, fov_recompute, root_console, screen_widt
                 else:
                     con.draw_char(x, y, None, fg=None, bg=colors.get('dark_ground'))
 
+    entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value)
+
     # Draw all entities in the list
-    for entity in entities:
+    for entity in entities_in_render_order:
         draw_entity(con, entity, game_map.fov)
+
+    con.draw_str(1, screen_height - 2, 'HP: {0:02}/{1:02}'.format(player.fighter.hp, player.fighter.max_hp))
 
     root_console.blit(con, 0, 0, screen_width, screen_height, 0, 0)
 
