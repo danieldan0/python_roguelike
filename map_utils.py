@@ -11,29 +11,61 @@ from entity import Entity
 
 class GameMap(Map):
     def __init__(self, width, height):
+        """
+        Game map object.
+
+        :param width: int
+        :param height: int
+        """
         super().__init__(width, height)
         self.explored = [[False for y in range(height)] for x in range(width)]
 
 
 class Rect:
     def __init__(self, x, y, w, h):
+        """
+        Rectangle. Used for rooms, areas.
+
+        :param x: int
+        :param y: int
+        :param w: int
+        :param h: int
+        """
         self.x1 = x
         self.y1 = y
         self.x2 = x + w
         self.y2 = y + h
 
     def center(self):
+        """
+        Returns the center of rectangle.
+
+        :return: tuple<int>(x, y)
+        """
         center_x = (self.x1 + self.x2) // 2
         center_y = (self.y1 + self.y2) // 2
         return center_x, center_y
 
     def intersect(self, other):
-        # returns true if this rectangle intersects with another one
+        """
+        Returns true if this rectangle intersects with another one.
+
+        :param other: Rect
+        :return: bool
+        """
         return (self.x1 <= other.x2 and self.x2 >= other.x1 and
                 self.y1 <= other.y2 and self.y2 >= other.y1)
 
 
 def place_entities(room, entities, max_monsters_per_room, colors):
+    """
+    Randomly places entities.
+
+    :param room: Rect
+    :param entities: list<Entity>
+    :param max_monsters_per_room: int
+    :param colors: dict<tuple<int>(r, g, b)>>
+    """
     # Get a random number of monsters
     number_of_monsters = randint(0, max_monsters_per_room)
 
@@ -60,7 +92,12 @@ def place_entities(room, entities, max_monsters_per_room, colors):
 
 
 def create_room(game_map, room):
-    # go through the tiles in the rectangle and make them passable
+    """
+    Go through the tiles in the rectangle and make them passable.
+
+    :param game_map: GameMap
+    :param room: Rect
+    """
     for x in range(room.x1 + 1, room.x2):
         for y in range(room.y1 + 1, room.y2):
             game_map.walkable[x, y] = True
@@ -68,12 +105,28 @@ def create_room(game_map, room):
 
 
 def create_h_tunnel(game_map, x1, x2, y):
+    """
+    Creates horizontal tunnel.
+
+    :param game_map: GameMap
+    :param x1: int
+    :param x2: int
+    :param y: int
+    """
     for x in range(min(x1, x2), max(x1, x2) + 1):
         game_map.walkable[x, y] = True
         game_map.transparent[x, y] = True
 
 
 def create_v_tunnel(game_map, y1, y2, x):
+    """
+    Creates vertical tunnel.
+
+    :param game_map: GameMap
+    :param y1: int
+    :param y2: int
+    :param x: int
+    """
     for y in range(min(y1, y2), max(y1, y2) + 1):
         game_map.walkable[x, y] = True
         game_map.transparent[x, y] = True

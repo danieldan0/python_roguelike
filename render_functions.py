@@ -11,7 +11,7 @@ def get_entities_under_mouse(mouse_coordinates, entities, game_map):
     """
     Used for displaying info when entities are hovered.
 
-    :param mouse_coordinates: tuple(x, y)
+    :param mouse_coordinates: tuple<int>(x, y)
     :param entities: list<Entity>
     :param game_map: GameMap
     :return: list<Entity>
@@ -35,9 +35,9 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     :param name: string
     :param value: int
     :param maximum: int
-    :param bar_color: tuple(r, g, b)
-    :param back_color: tuple(r, g, b)
-    :param string_color: tuple(r, g, b)
+    :param bar_color: tuple<int>(r, g, b)
+    :param back_color: tuple<int>(r, g, b)
+    :param string_color: tuple<int>(r, g, b)
     """
 
     # first calculate the width of the bar
@@ -77,7 +77,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
     :param panel_height: int
     :param panel_y: int
     :param mouse_coordinates: tuple(x, y)
-    :param colors: dict<tuple(r, g, b)>
+    :param colors: dict<tuple<int>(r, g, b)>
     """
     if fov_recompute:
         for x, y in game_map:
