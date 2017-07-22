@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class RenderOrder(Enum):
     CORPSE = 1
     ITEM = 2
@@ -8,12 +9,12 @@ class RenderOrder(Enum):
 
 def get_entities_under_mouse(mouse_coordinates, entities, game_map):
     """
-    Used for displaying info whaen entities are hovered.
+    Used for displaying info when entities are hovered.
 
-    :param mouse_coordinates: Tuple (x, y)
-    :param entities: List<Entity>
+    :param mouse_coordinates: tuple(x, y)
+    :param entities: list<Entity>
     :param game_map: GameMap
-    :return: List<Entity>
+    :return: list<Entity>
     """
     x, y = mouse_coordinates
 
@@ -22,8 +23,25 @@ def get_entities_under_mouse(mouse_coordinates, entities, game_map):
 
     return entities_under_mouse
 
+
 def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, string_color):
-    # Render a bar (HP, experience, etc). first calculate the width of the bar
+    """
+    Render a bar (HP, experience, etc).
+
+    :param panel: tdl.Console
+    :param x: int
+    :param y: int
+    :param total_width: int
+    :param name: string
+    :param value: int
+    :param maximum: int
+    :param bar_color: tuple(r, g, b)
+    :param back_color: tuple(r, g, b)
+    :param string_color: tuple(r, g, b)
+    """
+
+    # first calculate the width of the bar
+
     bar_width = int(float(value) / maximum * total_width)
 
     # Render the background first
@@ -39,8 +57,28 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
 
     panel.draw_str(x_centered, y, text, fg=string_color, bg=None)
 
+
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, screen_width,
                screen_height, bar_width, panel_height, panel_y, mouse_coordinates, colors):
+    """
+    Renders all.
+
+    :param con: tdl.Console
+    :param panel: tdl.Console
+    :param entities: list<Entity>
+    :param player: Entity
+    :param game_map: GameMap
+    :param fov_recompute: bool
+    :param root_console: tdl.Console
+    :param message_log: MessageLog
+    :param screen_width: int
+    :param screen_height: int
+    :param bar_width: int
+    :param panel_height: int
+    :param panel_y: int
+    :param mouse_coordinates: tuple(x, y)
+    :param colors: dict<tuple(r, g, b)>
+    """
     if fov_recompute:
         for x, y in game_map:
             wall = not game_map.transparent[x, y]
@@ -91,15 +129,33 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
 
 def clear_all(con, entities):
+    """
+    Clears all entities.
+
+    :param con: tdl.Console
+    :param entities: list<Entity>
+    """
     for entity in entities:
         clear_entity(con, entity)
 
 
 def draw_entity(con, entity, fov):
+    """
+    Draws entity.
+
+    :param con: tdl.Console
+    :param entity: Entity
+    :param fov: tdl.Map.fov
+    """
     if fov[entity.x, entity.y]:
         con.draw_char(entity.x, entity.y, entity.char, entity.color, bg=None)
 
 
 def clear_entity(con, entity):
-    # erase the character that represents this object
+    """
+    Erases the character that represents entity.
+
+    :param con: tdl.Console
+    :param entity: Entity
+    """
     con.draw_char(entity.x, entity.y, ' ', entity.color, bg=None)
