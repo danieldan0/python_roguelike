@@ -5,14 +5,22 @@ class RenderOrder(Enum):
     ITEM = 2
     ACTOR = 3
 
-def get_names_under_mouse(mouse_coordinates, entities, game_map):
+
+def get_entities_under_mouse(mouse_coordinates, entities, game_map):
+    """
+    Used for displaying info whaen entities are hovered.
+
+    :param mouse_coordinates: Tuple (x, y)
+    :param entities: List<Entity>
+    :param game_map: GameMap
+    :return: List<Entity>
+    """
     x, y = mouse_coordinates
 
-    names = [entity.name for entity in entities
-             if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y]]
-    names = ', '.join(names)
+    entities_under_mouse = [entity for entity in entities
+                            if entity.x == x and entity.y == y and game_map.fov[entity.x, entity.y]]
 
-    return names.capitalize()
+    return entities_under_mouse
 
 def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_color, string_color):
     # Render a bar (HP, experience, etc). first calculate the width of the bar
@@ -65,10 +73,19 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
         panel.draw_str(message_log.x, y, message.text, bg=None, fg=message.color)
         y += 1
 
-    render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp,
+    entities_under_mouse = get_entities_under_mouse(mouse_coordinates, entities, game_map)
+
+    render_bar(panel, 1, 0, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp,
                colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
 
-    panel.draw_str(1, 0, get_names_under_mouse(mouse_coordinates, entities, game_map))
+    y = 1
+
+    for entity in entities_under_mouse:
+        panel.draw_str(1, y, entity.name)
+        if entity.render_order != RenderOrder.CORPSE:
+            render_bar(panel, len(entity.name) + 1, y, bar_width, 'HP', entity.fighter.hp,
+                       player.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
+        y += 1
 
     root_console.blit(panel, 0, panel_y, screen_width, panel_height, 0, 0)
 
