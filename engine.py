@@ -141,7 +141,7 @@ def main():
             game_state = GameStates.ENEMY_TURN
 
         if open_inventory:
-            inventory_menu("Inventory", inventory, inventory_width, screen_height, screen_width, colors,
+            inventory_menu(root_console, "Inventory", inventory, inventory_width, screen_height, screen_width, colors,
                            mouse_coordinates)
 
         if exit:
@@ -194,14 +194,14 @@ def main():
                 game_state = GameStates.PLAYERS_TURN
 
 
-def inventory_menu(header, inventory, inventory_width, screen_height, screen_width, colors, mouse_coordinates):
+def inventory_menu(root_console, header, inventory, inventory_width, screen_height, screen_width, colors, mouse_coordinates):
     # show a menu with each item of the inventory as an option
     if len(inventory) == 0:
         options = ['Inventory is empty.']
     else:
         options = [item.name for item in inventory]
 
-    index = menu(header, options, inventory_width, screen_height, screen_width, colors, mouse_coordinates)
+    index = menu(root_console, header, options, inventory_width, screen_height, screen_width, colors, mouse_coordinates)
 
 if __name__ == '__main__':
     main()
