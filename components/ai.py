@@ -1,5 +1,13 @@
 class BasicMonster:
     def take_turn(self, target, game_map, entities):
+        """
+        AI takes turn.
+
+        :param target: Entity
+        :param game_map: GameMap
+        :param entities: list<Entity>
+        :return: array
+        """
         results = []
 
         monster = self.owner

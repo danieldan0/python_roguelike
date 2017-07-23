@@ -9,6 +9,7 @@ from input_handlers import handle_keys
 from render_functions import clear_all, render_all, RenderOrder
 from map_utils import GameMap, make_map
 
+
 def main():
     screen_width = 80
     screen_height = 50
@@ -51,12 +52,13 @@ def main():
     }
 
     fighter_component = Fighter(hp=30, defense=2, power=5)
-    player = Entity(0, 0, '@', (255, 255, 255), 'Player', render_order=RenderOrder.ACTOR, blocks=True, fighter=fighter_component)
+    player = Entity(0, 0, '@', (255, 255, 255), 'Player', render_order=RenderOrder.ACTOR,
+                    blocks=True, fighter=fighter_component)
     entities = [player]
 
-    tdl.set_font('arial10x10.png', greyscale = True, altLayout = True)
+    tdl.set_font('arial10x10.png', greyscale=True, altLayout=True)
 
-    root_console = tdl.init(screen_width, screen_height, title = 'Roguelike Tutorial Revised')
+    root_console = tdl.init(screen_width, screen_height, title='Roguelike Tutorial Revised')
 
     con = tdl.Console(screen_width, screen_height)
     panel = tdl.Console(screen_width, panel_height)
