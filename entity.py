@@ -4,7 +4,8 @@ from render_functions import RenderOrder
 
 
 class Entity:
-    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None):
+    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None,
+                 item=None):
         """
         Entity class.
 
@@ -28,12 +29,17 @@ class Entity:
         self.components = []
         self.fighter = fighter
         self.ai = ai
+        self.item = item
 
+        # let the components know who owns it
         if self.fighter:
             self.fighter.owner = self
 
         if self.ai:
             self.ai.owner = self
+
+        if self.item:
+            self.item.owner = self
 
     def has_component(self, component):
         """

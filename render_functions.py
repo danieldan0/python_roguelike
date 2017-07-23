@@ -1,4 +1,6 @@
 from enum import Enum
+import textwrap
+import tdl
 
 
 class RenderOrder(Enum):
@@ -56,6 +58,96 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
     x_centered = x + int((total_width-len(text)) / 2)
 
     panel.draw_str(x_centered, y, text, fg=string_color, bg=None)
+
+
+def menu(con, header, options, width, screen_height, screen_width, colors, mouse_coordinates=(0, 0)):
+    """
+    Renders a menu(inventory, shop etc). Returns a clicked option.
+
+    :param con: tdl.Console
+    :param header: string
+    :param options: array
+    :param width: int
+    :param screen_height: int
+    :param screen_width: int
+    :param colors: dict<tuple<int>(r, g, b)>
+    :param mouse_coordinates: tuple<int>(x, y)
+    :return: int/None
+    """
+    if len(options) > 26:
+        raise ValueError('Cannot have a menu with more than 26 options.')
+
+    # calculate total height for the header (after textwrap) and one line per option
+    header_wrapped = textwrap.wrap(header, width)
+    header_height = len(header_wrapped)
+    height = len(options) + header_height
+
+    # create an off-screen console that represents the menu's window
+    window = tdl.Console(width, height)
+
+    # print the header, with wrapped text
+    window.draw_rect(0, 0, width, height, None, fg=colors.get("white"), bg=None)
+    for i, line in enumerate(header_wrapped):
+        window.draw_str(0, 0 + i, header_wrapped[i])
+
+    y = header_height
+    letter_index = ord('a')
+    for option_text in options:
+        text = '(' + chr(letter_index) + ') ' + option_text
+        window.draw_str(0, y, text, bg=None)
+        y += 1
+        letter_index += 1
+
+    # blit the contents of "window" to the root console
+    x = screen_width // 2 - width // 2
+    y = screen_height // 2 - height // 2
+    con.blit(window, x, y, width, height, 0, 0)
+
+    # compute x and y offsets to convert console position to menu position
+    x_offset = x  # x is the left edge of the menu
+    y_offset = y + header_height  # subtract the height of the header from the top edge of the menu
+
+    while True:
+        # present the root console to the player and check for input
+        tdl.flush()
+        user_input = None
+        button = None
+        for event in tdl.event.get():
+            if event.type == 'KEYDOWN':
+                user_input = event
+            if event.type == 'MOUSEDOWN':
+                button = event.button
+                mouse_coordinates = event.cell
+            if event.type == 'MOUSEMOTION':
+                button = None
+                mouse_coordinates = event.cell
+        else:
+            user_input = None
+            button = None
+
+        letter_index = ord('a')
+        for option_text in options:
+            text = '(' + chr(letter_index) + ') ' + option_text
+            menu_y = mouse_coordinates[1] - y_offset
+            if menu_y == mouse_coordinates[0]:
+                bg = colors.get("white")
+            else:
+                bg = None
+
+            window.draw_str(0, y, text, bg=bg)
+            y += 1
+            letter_index += 1
+
+        if button == "LEFT":
+            menu_x, menu_y = (mouse_coordinates[0] - x_offset, mouse_coordinates[1] - y_offset)
+            # check if click is within the menu and on a choice
+            if width > menu_x >= 0 and height - header_height > menu_y >= 0:
+                return menu_y
+            else:
+                return None
+
+        if user_input.key == 'ENTER' and user_input.alt:
+            tdl.set_fullscreen(not tdl.get_fullscreen())
 
 
 def render_all(con, panel, entities, player, game_map, fov_recompute, root_console, message_log, screen_width,
@@ -120,7 +212,7 @@ def render_all(con, panel, entities, player, game_map, fov_recompute, root_conso
 
     for entity in entities_under_mouse:
         panel.draw_str(1, y, entity.name)
-        if entity.render_order != RenderOrder.CORPSE:
+        if entity.render_order == RenderOrder.ACTOR:
             render_bar(panel, len(entity.name) + 1, y, bar_width, 'HP', entity.fighter.hp,
                        player.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
         y += 1

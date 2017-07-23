@@ -4,6 +4,7 @@ from random import randint
 
 from components.ai import BasicMonster
 from components.fighter import Fighter
+from components.item import Item
 
 from render_functions import RenderOrder
 from entity import Entity
@@ -133,7 +134,7 @@ def create_v_tunnel(game_map, y1, y2, x):
 
 
 def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
-             max_monsters_per_room, colors):
+             max_monsters_per_room, colors, max_room_items):
     """
     Makes map.
 
@@ -147,6 +148,7 @@ def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_h
     :param entities: list<Entity>
     :param max_monsters_per_room: int
     :param colors: dict<tuple<int>(r, g, b)>
+    :param max_room_items: int
     """
     rooms = []
     num_rooms = 0
@@ -177,6 +179,23 @@ def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_h
 
                 # place monsters
                 place_entities(new_room, entities, max_monsters_per_room, colors)
+
+                # choose random number of items
+                num_items = randint(0, max_room_items)
+
+                for i in range(num_items):
+                    # choose random spot for this item
+                    x = randint(new_room.x1 + 1, new_room.x2 - 1)
+                    y = randint(new_room.y1 + 1, new_room.y2 - 1)
+
+                    # only place it if the tile is not blocked
+                    if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+                        # create a healing potion
+                        item_component = Item()
+                        item = Entity(x, y, '!', colors.get("violet"), 'healing potion', render_order=RenderOrder.ITEM,
+                                      item=item_component)
+
+                        entities.append(item)
 
                 if num_rooms == 0:
                     # this is the first room, where the player starts at

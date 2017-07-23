@@ -23,6 +23,10 @@ def handle_keys(user_input):
         return {'move': (-1, 1)}
     elif key_char == 'n':
         return {'move': (1, 1)}
+    elif key_char == 'g':
+        return {'pickup': True}
+    elif key_char == 'i':
+        return {'inventory': True}
 
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle full screen

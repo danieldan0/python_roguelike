@@ -6,7 +6,7 @@ from entity import Entity, get_blocking_entities_at_location
 from game_messages import MessageLog
 from game_states import GameStates
 from input_handlers import handle_keys
-from render_functions import clear_all, render_all, RenderOrder
+from render_functions import clear_all, render_all, RenderOrder, menu
 from map_utils import GameMap, make_map
 
 
@@ -34,6 +34,7 @@ def main():
     fov_radius = 10
 
     max_monsters_per_room = 3
+    max_room_items = 2
 
     colors = {
         'dark_wall': (0, 0, 100),
@@ -48,10 +49,13 @@ def main():
         'red': (255, 0, 0),
         'orange': (255, 127, 0),
         'light_red': (255, 114, 114),
-        'darker_red': (127, 0, 0)
+        'darker_red': (127, 0, 0),
+        "violet": (148, 0, 211)
     }
 
     fighter_component = Fighter(hp=30, defense=2, power=5)
+    inventory = []
+    inventory_width = 50
     player = Entity(0, 0, '@', (255, 255, 255), 'Player', render_order=RenderOrder.ACTOR,
                     blocks=True, fighter=fighter_component)
     entities = [player]
@@ -65,7 +69,7 @@ def main():
 
     game_map = GameMap(map_width, map_height)
     make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
-             max_monsters_per_room, colors)
+             max_monsters_per_room, colors, max_room_items)
 
     fov_recompute = True
 
@@ -104,6 +108,8 @@ def main():
         move = action.get('move')
         exit = action.get('exit')
         fullscreen = action.get('fullscreen')
+        pickup = action.get('pickup')
+        open_inventory = action.get('inventory')
 
         player_turn_results = []
 
@@ -124,6 +130,19 @@ def main():
                     fov_recompute = True
 
                 game_state = GameStates.ENEMY_TURN
+
+        if pickup and game_state == GameStates.PLAYERS_TURN:
+            # pick up an item
+            for entity in entities:  # look for an item in the player's tile
+                if entity.x == player.x and entity.y == player.y and entity.item:
+                    pickup_results = entity.item.pick_up(entities, inventory, colors)
+                    player_turn_results.extend(pickup_results)
+                    break
+            game_state = GameStates.ENEMY_TURN
+
+        if open_inventory:
+            inventory_menu("Inventory", inventory, inventory_width, screen_height, screen_width, colors,
+                           mouse_coordinates)
 
         if exit:
             return True
@@ -173,6 +192,16 @@ def main():
                         break
             else:
                 game_state = GameStates.PLAYERS_TURN
+
+
+def inventory_menu(header, inventory, inventory_width, screen_height, screen_width, colors, mouse_coordinates):
+    # show a menu with each item of the inventory as an option
+    if len(inventory) == 0:
+        options = ['Inventory is empty.']
+    else:
+        options = [item.name for item in inventory]
+
+    index = menu(header, options, inventory_width, screen_height, screen_width, colors, mouse_coordinates)
 
 if __name__ == '__main__':
     main()
