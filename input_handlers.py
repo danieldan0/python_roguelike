@@ -1,4 +1,10 @@
 def handle_keys(user_input):
+    """
+    Keyboard input handler.
+
+    :param user_input: user_input
+    :return: dict
+    """
     key_char = user_input.char
 
     if user_input.key == 'UP' or key_char == 'k':

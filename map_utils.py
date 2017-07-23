@@ -79,14 +79,14 @@ def place_entities(room, entities, max_monsters_per_room, colors):
                 fighter_component = Fighter(hp=10, defense=0, power=3)
                 ai_component = BasicMonster()
 
-                monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True, render_order=RenderOrder.ACTOR,
-                                 fighter=fighter_component, ai=ai_component)
+                monster = Entity(x, y, 'o', colors.get('desaturated_green'), 'Orc', blocks=True,
+                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
             else:
                 fighter_component = Fighter(hp=16, defense=1, power=4)
                 ai_component = BasicMonster()
 
-                monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True, render_order=RenderOrder.ACTOR,
-                                 fighter=fighter_component, ai=ai_component)
+                monster = Entity(x, y, 'T', colors.get('darker_green'), 'Troll', blocks=True,
+                                 render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
 
             entities.append(monster)
 
@@ -134,6 +134,20 @@ def create_v_tunnel(game_map, y1, y2, x):
 
 def make_map(game_map, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities,
              max_monsters_per_room, colors):
+    """
+    Makes map.
+
+    :param game_map: GameMap
+    :param max_rooms: int
+    :param room_min_size: int
+    :param room_max_size: int
+    :param map_width: int
+    :param map_height: int
+    :param player: Entity
+    :param entities: list<Entity>
+    :param max_monsters_per_room: int
+    :param colors: dict<tuple<int>(r, g, b)>
+    """
     rooms = []
     num_rooms = 0
 
